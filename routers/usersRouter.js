@@ -10,7 +10,10 @@ class UsersRouter {
     // we will insert routes into here later on
     router.get("/", this.controller.getAll.bind(this.controller));
     router.get("/:userId", this.controller.getOne.bind(this.controller));
-    router.post("/", this.controller.addUserInfo.bind(this.controller));
+    router.post("/login", this.controller.login.bind(this.controller)); //login
+    // Add this line to your UsersRouter.js to include the new updateUser route
+    router.post("/", this.controller.updateUserInfo.bind(this.controller));
+
     // router.post(
     //   "/",
     // this.jwtCheck,
