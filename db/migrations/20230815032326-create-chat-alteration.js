@@ -9,8 +9,10 @@ module.exports = {
         type: Sequelize.TEXT,
       },
     });
+    await queryInterface.removeColumn("chats", "content");
   },
   async down(queryInterface, Sequelize) {
+    await queryInterface.addColumn("chats", "content");
     await queryInterface.removeColumn("chat_histories", "content");
     await queryInterface.renameTable("chat_messages", "chat_histories");
   },
