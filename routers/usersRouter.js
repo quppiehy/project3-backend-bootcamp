@@ -10,9 +10,21 @@ class UsersRouter {
     // we will insert routes into here later on
     router.get("/", this.controller.getAll.bind(this.controller));
     router.get("/:userId", this.controller.getOne.bind(this.controller));
+    router.post(
+      "/addresses/:userId",
+      this.controller.findOrCreateAddress.bind(this.controller)
+    );
+    router.get(
+      "/address/:userId",
+      this.controller.getOneAddress.bind(this.controller)
+    );
+
     router.post("/login", this.controller.login.bind(this.controller)); //login
-    // Add this line to your UsersRouter.js to include the new updateUser route
-    router.post("/", this.controller.updateUserInfo.bind(this.controller));
+    router.put("/", this.controller.updateUserInfo.bind(this.controller));
+    router.put(
+      "/addresses",
+      this.controller.updateAddressInfo.bind(this.controller)
+    );
 
     // router.post(
     //   "/",

@@ -16,6 +16,7 @@ const {
   seller_discount,
   photo,
   chat,
+  address,
   chat_message,
 } = db;
 
@@ -36,7 +37,7 @@ const productsController = new ProductsController(
   user,
   photo
 );
-const usersController = new UsersController(user);
+const usersController = new UsersController(user, address);
 const ordersController = new OrdersController(order, user);
 const chatController = new ChatController(chat, chat_message);
 
