@@ -151,7 +151,7 @@ class UsersController extends BaseController {
         email: email,
         mobileNumber: mobileNumber,
       });
-      return res.json(output)
+      return res.json(output);
     } catch (err) {
       console.error(err.message);
       return res.status(400).json({ error: true, msg: err.message });
