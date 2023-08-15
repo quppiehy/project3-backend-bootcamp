@@ -90,6 +90,25 @@ class UsersController extends BaseController {
     }
   }
 
+  async addUserInfo(req, res) {
+    // Extract the user ID from the URL
+    const { username, firstName, lastName, email, mobileNumber } = req.body;
+    try {
+      // Update the user’s information in the database
+      const output = await this.model.create({
+        userName: username,
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        mobileNumber: mobileNumber,
+      });
+      return res.json(output);
+    } catch (err) {
+      console.error(err.message);
+      return res.status(400).json({ error: true, msg: err.message });
+    }
+  }
+
   // async getAll(req, res) {
   //   // console.log(this.userModel);
   //   try {
