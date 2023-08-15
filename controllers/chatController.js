@@ -1,20 +1,36 @@
 const BaseController = require("./baseController");
 
 class ChatController extends BaseController {
-  constructor(model, historyModel) {
+  constructor(model, messageModel) {
     super(model);
-    this.historyModel = historyModel;
+    this.messageModel = messageModel;
   }
 
   /** if a method in this extended class AND the base class has the same name, the one in the extended class will run over the base method */
 
-  async sendMessage(data) {
-    const { prodId, content, userId } = data;
+  async createRoom(data) {
+    const { productId, userId } = data;
     try {
-      const newChat = await this.chatModel.create({
-        prodId: prodId,
+      const [newChat, created] = await this.model.findOrCreate({
+        where: { productId: productId, userId: userId },
+      });
+      if (created) {
+        console.log("Created 1 new Chat!");
+      } else {
+        console.log("retrieved chat!");
+      }
+      return newChat;
+    } catch (err) {
+      return err.message;
+    }
+  }
+
+  async sendMessage(data) {
+    const { content, room } = data;
+    try {
+      const newChat = await this.messageModel.create({
+        chatId: room,
         content: content,
-        userId: userId,
       });
       return newChat;
     } catch (err) {

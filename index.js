@@ -16,7 +16,7 @@ const {
   seller_discount,
   photo,
   chat,
-  chat_history,
+  chat_message,
 } = db;
 
 // import middlewares
@@ -38,7 +38,7 @@ const productsController = new ProductsController(
 );
 const usersController = new UsersController(user);
 const ordersController = new OrdersController(order, user);
-const chatController = new ChatController(chat, chat_history);
+const chatController = new ChatController(chat, chat_message);
 
 // importing Routers
 const ProductsRouter = require("./routers/productsRouter");
@@ -54,7 +54,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: process.env.REACT_APP_CORS_OPTIONS,
-  methods: ["GET", "POST","PUT"],
+  methods: ["GET", "POST", "PUT"],
 });
 
 // initialize Routers
@@ -62,8 +62,6 @@ const productsRouter = new ProductsRouter(productsController); // pass in jwtChe
 const usersRouter = new UsersRouter(usersController);
 const ordersRouter = new OrdersRouter(ordersController);
 const chatRouter = new ChatRouter(io, chatController);
-
-// const socketManager = new SocketManager(server, chat, chat_history);
 
 // Enable CORS access to this server
 const corsOptions = {
