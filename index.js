@@ -54,7 +54,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: process.env.REACT_APP_CORS_OPTIONS,
-  methods: ["GET", "POST"],
+  methods: ["GET", "POST","PUT"],
 });
 
 // initialize Routers
