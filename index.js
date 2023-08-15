@@ -18,6 +18,8 @@ const {
   chat,
   chat_history,
   address,
+  current_cart,
+  current_cart_product,
 } = db;
 
 // import middlewares
@@ -35,7 +37,9 @@ const productsController = new ProductsController(
   category,
   seller_discount,
   user,
-  photo
+  photo,
+  current_cart,
+  current_cart_product
 );
 const usersController = new UsersController(user, address);
 const ordersController = new OrdersController(order, user);

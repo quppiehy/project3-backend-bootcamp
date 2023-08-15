@@ -26,6 +26,18 @@ class ProductsRouter {
       "/category/:categoryId",
       this.controller.getOneCategory.bind(this.controller)
     );
+
+    //Cart Functions
+
+    router.get(
+      "/carts/:userId",
+      this.controller.getOrCreateCart.bind(this.controller)
+    );
+    router.post(
+      "/carts/",
+      this.controller.updateCurrentCart.bind(this.controller)
+    );
+
     // router.post(
     //   "/",
     // this.jwtCheck,

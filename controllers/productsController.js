@@ -2,12 +2,22 @@ const BaseController = require("./baseController");
 const { Op } = require("sequelize");
 
 class ProductsController extends BaseController {
-  constructor(model, category, seller_discount, user, photo) {
+  constructor(
+    model,
+    category,
+    seller_discount,
+    user,
+    photo,
+    current_cart,
+    current_cart_product
+  ) {
     super(model);
     this.categoryModel = category;
     this.sellerDiscountModel = seller_discount;
     this.userModel = user;
     this.photoModel = photo;
+    this.currentCartModel = current_cart;
+    this.currentCartProductModel = current_cart_product;
   }
 
   // onLogin check if user exists, if not create
@@ -178,6 +188,38 @@ class ProductsController extends BaseController {
       return res.json(output);
     } catch (err) {
       return res.status(400).json({ error: true, msg: err.message });
+    }
+  }
+
+  //Product Cart functionalities
+  async getOrCreateCart(req, res) {
+    try {
+      const { userId } = req.params;
+      const [cart, created] = await this.currentCartModel.findOrCreate({
+        where: { userId },
+        defaults: { userId },
+      });
+      if (created) {
+        console.log("cart already created");
+      }
+      res.json(cart.id);
+    } catch (error) {
+      console.error("Error", error);
+      res.status(500).json({ error: "Failed" });
+    }
+  }
+
+  async updateCurrentCart(req, res) {
+    try {
+      const { productId, currentCartId } = req.body;
+      await this.currentCartProductModel.create({
+        productId: productId,
+        currentCartId: currentCartId,
+      });
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error", error);
+      res.status(500).json({ error: "Failed" });
     }
   }
 }
