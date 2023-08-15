@@ -1,12 +1,12 @@
 "use strict";
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-  class Chat_History extends Model {
+  class Chat_Message extends Model {
     static associate(models) {
       this.belongsTo(models.chat, { foreignKey: "chatId" });
     }
   }
-  Chat_History.init(
+  Chat_Message.init(
     {
       chatId: {
         type: DataTypes.INTEGER,
@@ -22,5 +22,5 @@ module.exports = (sequelize, DataTypes) => {
       underscored: true,
     }
   );
-  return Chat_History;
+  return Chat_Message;
 };

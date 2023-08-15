@@ -1,12 +1,23 @@
 const express = require("express");
 const http = require("http");
 const cors = require("cors");
+// const { Server } = require("socket.io");
+// const SocketManager = require("./Components/socket");
 const { Server } = require("socket.io");
 require("dotenv").config();
 
 // importing DB
 const db = require("./db/models/index");
-const { product, user, order, category, seller_discount, photo } = db;
+const {
+  product,
+  user,
+  order,
+  category,
+  seller_discount,
+  photo,
+  chat,
+  chat_history,
+} = db;
 
 // import middlewares
 // const jwtCheck = require("./middlewares/jwtCheck");
@@ -15,6 +26,7 @@ const { product, user, order, category, seller_discount, photo } = db;
 const ProductsController = require("./controllers/productsController");
 const UsersController = require("./controllers/usersController.js");
 const OrdersController = require("./controllers/ordersController.js");
+const ChatController = require("./controllers/chatController.js");
 
 // initializing Controllers -> note the lowercase for the first word
 const productsController = new ProductsController(
@@ -26,16 +38,13 @@ const productsController = new ProductsController(
 );
 const usersController = new UsersController(user);
 const ordersController = new OrdersController(order, user);
+const chatController = new ChatController(chat, chat_history);
 
 // importing Routers
 const ProductsRouter = require("./routers/productsRouter");
 const UsersRouter = require("./routers/usersRouter");
 const OrdersRouter = require("./routers/ordersRouter");
-
-// initialize Routers
-const productsRouter = new ProductsRouter(productsController); // pass in jwtCheck as 2nd parameter if needed
-const usersRouter = new UsersRouter(usersController);
-const ordersRouter = new OrdersRouter(ordersController);
+const ChatRouter = require("./routers/chatRouter");
 
 // declare port to listen to and initialise Express
 const PORT = process.env.PORT;
@@ -43,37 +52,23 @@ const app = express();
 
 //create server for chat
 const server = http.createServer(app);
-
-// Enable CORS access to this server
-const corsOptions = {
-  origin: process.env.REACT_APP_CORS_OPTIONS,
-};
-
-// connect io server for chat
 const io = new Server(server, {
   cors: process.env.REACT_APP_CORS_OPTIONS,
   methods: ["GET", "POST","PUT"],
 });
 
-// listening for events
-io.on("connection", (socket) => {
-  console.log(`User Connected: ${socket.id}`);
+// initialize Routers
+const productsRouter = new ProductsRouter(productsController); // pass in jwtCheck as 2nd parameter if needed
+const usersRouter = new UsersRouter(usersController);
+const ordersRouter = new OrdersRouter(ordersController);
+const chatRouter = new ChatRouter(io, chatController);
 
-  // to join a room
-  socket.on("join_room", (data) => {
-    socket.join(data);
-    console.log(`User with ID: ${socket.id} joined room: ${data}`);
-  });
+// const socketManager = new SocketManager(server, chat, chat_history);
 
-  //emit message to single room
-  socket.on("send_message", (data) => {
-    socket.to(data.room).emit("receive_message", data);
-  });
-
-  socket.on("disconnect", () => {
-    console.log("User Disconnected", socket.id);
-  });
-});
+// Enable CORS access to this server
+const corsOptions = {
+  origin: process.env.REACT_APP_CORS_OPTIONS,
+};
 
 app.use(cors(corsOptions));
 // Enable reading JSON request bodies
@@ -84,6 +79,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/products", productsRouter.routes());
 app.use("/users", usersRouter.routes());
 app.use("/orders", ordersRouter.routes());
+
+//set up chatRouter instance to handle socket listeners
+chatRouter.setupSocketListeners();
 
 app.listen(PORT, () => {
   console.log(`Express app listening on port ${PORT}!`);

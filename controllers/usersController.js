@@ -11,24 +11,39 @@ class UsersController extends BaseController {
   async login(req, res) {
     const user = req.body;
     console.log("this is the user", user);
-    const { given_name, family_name, email } = req.body;
-    const givenName = given_name;
-    const familyName = family_name;
-    console.log(givenName, familyName);
+    let givenName = "";
+    let familyName = "";
+    let loginEmail = "";
+    if (user.given_name !== "" && user.family_name !== "") {
+      const { given_name, family_name, email } = req.body;
+      givenName = given_name;
+      familyName = family_name;
+      loginEmail = email;
+      console.log(givenName, familyName, email);
+    } else {
+      const { email } = req.body;
+      givenName = null;
+      familyName = null;
+      loginEmail = email;
+      console.log(givenName, familyName, email);
+    }
     try {
       console.log("I'm in login try: b4 findone");
       const [checkedUser, created] = await this.model.findOrCreate({
-        where: { email: email },
+        where: { email: loginEmail },
         defaults: {
           firstName: givenName,
           lastName: familyName,
           phoneNum: null,
-          email: email,
+          email: loginEmail,
+          userName: loginEmail,
         },
       });
 
       if (created) {
         console.log("User Created!");
+      } else {
+        console.log("User retrieved!");
       }
 
       return res.json({ checkedUser });
