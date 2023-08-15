@@ -5,14 +5,19 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       this.belongsTo(models.product, { foreignKey: "productId" });
       this.belongsTo(models.user, { foreignKey: "userId" });
-      this.hasMany(models.chat_history);
+      this.hasMany(models.chat_message);
     }
   }
   Chat.init(
     {
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        unique: true,
+        autoIncrement: true,
+      },
       productId: DataTypes.INTEGER,
       userId: DataTypes.INTEGER,
-      content: DataTypes.STRING,
     },
     {
       sequelize,
