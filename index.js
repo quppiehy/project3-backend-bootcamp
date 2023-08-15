@@ -52,7 +52,7 @@ const corsOptions = {
 // connect io server for chat
 const io = new Server(server, {
   cors: process.env.REACT_APP_CORS_OPTIONS,
-  methods: ["GET", "POST"],
+  methods: ["GET", "POST","PUT"],
 });
 
 // listening for events
