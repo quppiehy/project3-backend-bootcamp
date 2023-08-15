@@ -15,10 +15,17 @@ module.exports = (sequelize, DataTypes) => {
           key: "id",
         },
       },
+      content: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      createdAt: {
+        type: DataTypes.DATE,
+      },
     },
     {
       sequelize,
-      modelName: "chat_history",
+      modelName: "chat_message",
       underscored: true,
     }
   );
