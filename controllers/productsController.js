@@ -103,7 +103,13 @@ class ProductsController extends BaseController {
     const { productId } = req.params;
     try {
       const output = await this.model.findByPk(productId, {
-        include: [{ model: this.photoModel }],
+        include: [
+          { model: this.photoModel },
+          {
+            model: this.userModel,
+            as: "seller",
+          },
+        ],
       });
       return res.json(output);
     } catch (err) {
