@@ -17,6 +17,7 @@ const {
   photo,
   chat,
   chat_history,
+  shipping_method,
 } = db;
 
 // import middlewares
@@ -37,7 +38,7 @@ const productsController = new ProductsController(
   photo
 );
 const usersController = new UsersController(user);
-const ordersController = new OrdersController(order, user);
+const ordersController = new OrdersController(order, user, shipping_method);
 const chatController = new ChatController(chat, chat_history);
 
 // importing Routers
@@ -54,7 +55,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: process.env.REACT_APP_CORS_OPTIONS,
-  methods: ["GET", "POST","PUT"],
+  methods: ["GET", "POST", "PUT"],
 });
 
 // initialize Routers
