@@ -1,4 +1,5 @@
 const BaseController = require("./baseController");
+const { Op } = require("sequelize");
 
 class ProductsController extends BaseController {
   constructor(model, category, seller_discount, user, photo) {
@@ -125,6 +126,7 @@ class ProductsController extends BaseController {
           { model: this.userModel, as: "seller" }, // Using the alias defined in the association
           { model: this.categoryModel },
           { model: this.sellerDiscountModel },
+          { model: this.photoModel },
         ],
       });
       return res.json(output);
@@ -160,6 +162,24 @@ class ProductsController extends BaseController {
     try {
       const output = await this.model.findAll({
         where: { categoryId },
+        include: [{ model: this.photoModel }],
+      });
+      return res.json(output);
+    } catch (err) {
+      return res.status(400).json({ error: true, msg: err.message });
+    }
+  }
+
+  async getProductsByFiltering(req, res) {
+    const search = req.body.search; // Extract the title value from the request body
+    try {
+      const output = await this.model.findAll({
+        where: {
+          title: {
+            [Op.iLike]: `%${search}%`, // Use wildcards to match titles that contain the specified string
+          }, // Search for products with the given title
+        },
+        include: [{ model: this.photoModel }],
       });
       return res.json(output);
     } catch (err) {

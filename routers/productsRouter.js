@@ -10,6 +10,10 @@ class ProductsRouter {
     // we will insert routes into here later on
     router.get("/", this.controller.getAll.bind(this.controller));
     router.get("/list", this.controller.getAllProducts.bind(this.controller));
+    router.post(
+      "/search",
+      this.controller.getProductsByFiltering.bind(this.controller)
+    );
     router.get(
       "/categories",
       this.controller.getAllCategories.bind(this.controller)

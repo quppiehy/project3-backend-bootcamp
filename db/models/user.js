@@ -1,5 +1,6 @@
 "use strict";
 const { Model } = require("sequelize");
+
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     static associate(models) {
@@ -19,7 +20,14 @@ module.exports = (sequelize, DataTypes) => {
         as: "products",
       });
     }
+
+    static updateUserInfo(userId, updatedUserInfo) {
+      return this.update(updatedUserInfo, {
+        where: { id: userId },
+      });
+    }
   }
+
   User.init(
     {
       id: {
