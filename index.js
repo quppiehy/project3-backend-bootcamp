@@ -15,10 +15,10 @@ const {
   category,
   seller_discount,
   photo,
-  product_order,
   chat,
   chat_history,
   shipping_method,
+  product_order,
 } = db;
 
 // import middlewares
@@ -41,11 +41,7 @@ const productsController = new ProductsController(
 const usersController = new UsersController(user);
 const ordersController = new OrdersController(order, user, shipping_method);
 const chatController = new ChatController(chat, chat_history);
-const productsOrdersController = new ProductsOrdersController(
-  product_order,
-  product,
-  seller_discount
-);
+const productsOrdersController = new ProductsOrdersController(product_order, product, seller_discount);
 
 // importing Routers
 const ProductsRouter = require("./routers/productsRouter");
