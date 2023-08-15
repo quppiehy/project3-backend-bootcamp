@@ -147,7 +147,6 @@ class UsersController extends BaseController {
         { userName, firstName, lastName, email, mobileNumber },
         { where: { id: id } }
       );
-
       return res.json(updatedUser);
     } catch (err) {
       console.error(err.message);

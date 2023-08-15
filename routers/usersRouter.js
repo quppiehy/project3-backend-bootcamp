@@ -20,7 +20,6 @@ class UsersRouter {
     );
 
     router.post("/login", this.controller.login.bind(this.controller)); //login
-    // Add this line to your UsersRouter.js to include the new updateUser route
     router.put("/", this.controller.updateUserInfo.bind(this.controller));
     router.put(
       "/addresses",
