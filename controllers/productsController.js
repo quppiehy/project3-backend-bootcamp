@@ -10,7 +10,7 @@ class ProductsController extends BaseController {
     photo,
     current_cart,
     current_cart_product,
-    review,
+    review
   ) {
     super(model);
     this.categoryModel = category;
@@ -389,6 +389,22 @@ class ProductsController extends BaseController {
     } catch (err) {
       console.log(err);
       return res.status(400).json({ error: true, msg: err.message });
+    }
+  }
+
+  async getTotalPrice(req, res) {
+    const { userId } = req.params;
+    try {
+      const total = await this.currentCartModel.findAll({
+        where: {
+          userId: userId,
+        },
+      });
+      console.log(total);
+      res.json(total);
+    } catch (error) {
+      console.log(error);
+      res.status(400).json(error);
     }
   }
 }

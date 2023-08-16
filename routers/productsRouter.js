@@ -55,6 +55,11 @@ class ProductsRouter {
       this.controller.destroyProductFromCart.bind(this.controller)
     );
 
+    router.get(
+      "/cart/total/:userId",
+      this.controller.getTotalPrice.bind(this.controller)
+    );
+
     // router.post(
     //   "/",
     // this.jwtCheck,

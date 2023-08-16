@@ -34,6 +34,7 @@ const UsersController = require("./controllers/usersController.js");
 const OrdersController = require("./controllers/ordersController.js");
 const ChatController = require("./controllers/chatController.js");
 const ProductsOrdersController = require("./controllers/productsOrdersController");
+const PaymentController = require("./controllers/paymentController");
 // initializing Controllers -> note the lowercase for the first word
 const productsController = new ProductsController(
   product,
@@ -59,6 +60,7 @@ const productsOrdersController = new ProductsOrdersController(
   product,
   seller_discount
 );
+const paymentController = new PaymentController();
 
 // importing Routers
 const ProductsRouter = require("./routers/productsRouter");
@@ -66,6 +68,7 @@ const UsersRouter = require("./routers/usersRouter");
 const OrdersRouter = require("./routers/ordersRouter");
 const ChatRouter = require("./routers/chatRouter");
 const ProductsOrdersRouter = require("./routers/productOrdersRouter");
+const PaymentRouter = require("./routers/paymentRouter");
 // declare port to listen to and initialise Express
 const PORT = process.env.PORT;
 const app = express();
@@ -83,6 +86,7 @@ const usersRouter = new UsersRouter(usersController);
 const ordersRouter = new OrdersRouter(ordersController);
 const chatRouter = new ChatRouter(io, chatController);
 const productsOrdersRouter = new ProductsOrdersRouter(productsOrdersController);
+const paymentRouter = new PaymentRouter(paymentController);
 
 // const socketManager = new SocketManager(server, chat, chat_history);
 
@@ -101,6 +105,7 @@ app.use("/products", productsRouter.routes());
 app.use("/users", usersRouter.routes());
 app.use("/orders", ordersRouter.routes());
 app.use("/productorders", productsOrdersRouter.routes());
+app.use("/payment", paymentRouter.routes());
 //set up chatRouter instance to handle socket listeners
 chatRouter.setupSocketListeners();
 
@@ -110,3 +115,7 @@ app.listen(PORT, () => {
 server.listen(3001, () => {
   console.log(`Server is running on port 3001`);
 });
+
+const bodyParser = require("body-parser");
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
