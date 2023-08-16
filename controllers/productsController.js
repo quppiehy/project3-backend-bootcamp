@@ -215,14 +215,103 @@ class ProductsController extends BaseController {
     }
   }
 
-  async updateCurrentCart(req, res) {
+  async addToCart(req, res) {
     try {
-      const { productId, currentCartId } = req.body;
+      const { productId, currentCartId, quantity } = req.body;
       await this.currentCartProductModel.create({
         productId: productId,
         currentCartId: currentCartId,
+        quantity: quantity,
       });
       res.json({ success: true });
+    } catch (error) {
+      console.error("Error", error);
+      res.status(500).json({ error: "Failed" });
+    }
+  }
+
+  async updateCurrentCart(req, res) {
+    try {
+      const { currentCartId } = req.params;
+      const { productId, quantity } = req.body;
+      const updatedProduct = await this.currentCartProductModel.update(
+        { quantity: quantity },
+        {
+          where: {
+            currentCartId: currentCartId,
+            productId: productId,
+          },
+        }
+      );
+      res.json(updatedProduct);
+    } catch (error) {
+      console.error("Error", error);
+      res.status(500).json({ error: "Failed" });
+    }
+  }
+
+  async updateTotalOfCurrentCart(req, res) {
+    try {
+      const { currentCartId } = req.params;
+      const { total } = req.body;
+
+      const updatedCart = await this.currentCartModel.update(
+        { totalPrice: total },
+        {
+          where: {
+            id: currentCartId,
+          },
+        }
+      );
+      res.json(updatedCart);
+    } catch (error) {
+      console.error("Error", error);
+      res.status(500).json({ error: "Failed" });
+    }
+  }
+
+  async destroyProductFromCart(req, res) {
+    try {
+      const { currentCartId, productId } = req.params;
+      await this.currentCartProductModel.destroy({
+        where: {
+          currentCartId: currentCartId,
+          productId: productId,
+        },
+      });
+      res.status(200).json({ message: "Product deleted from cart" });
+    } catch (error) {
+      console.error("Error", error);
+      res.status(500).json({ error: "Failed" });
+    }
+  }
+
+  async getAllProductsFromCart(req, res) {
+    try {
+      const { userId } = req.params;
+
+      const cart = await this.currentCartModel.findOne({
+        where: { userId: userId },
+      });
+
+      const productsInCart = await this.currentCartProductModel.findAll({
+        where: { currentCartId: cart.id },
+        include: [
+          {
+            model: this.model,
+            include: [
+              { model: this.photoModel },
+              { model: this.sellerDiscountModel },
+            ],
+          },
+        ],
+      });
+
+      if (!cart) {
+        res.json(null);
+      } else {
+        res.json(productsInCart);
+      }
     } catch (error) {
       console.error("Error", error);
       res.status(500).json({ error: "Failed" });

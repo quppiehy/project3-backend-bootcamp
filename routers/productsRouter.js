@@ -33,9 +33,25 @@ class ProductsRouter {
       "/carts/:userId",
       this.controller.getOrCreateCart.bind(this.controller)
     );
-    router.post(
-      "/carts/",
+    router.post("/carts/", this.controller.addToCart.bind(this.controller));
+
+    router.get(
+      "/cart/:userId",
+      this.controller.getAllProductsFromCart.bind(this.controller)
+    );
+
+    router.put(
+      "/cart/:currentCartId",
       this.controller.updateCurrentCart.bind(this.controller)
+    );
+    router.put(
+      "/cart/:currentCartId/total",
+      this.controller.updateTotalOfCurrentCart.bind(this.controller)
+    );
+
+    router.delete(
+      "/cart/:currentCartId/:productId",
+      this.controller.destroyProductFromCart.bind(this.controller)
     );
 
     // router.post(
