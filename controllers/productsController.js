@@ -186,5 +186,45 @@ class ProductsController extends BaseController {
       return res.status(400).json({ error: true, msg: err.message });
     }
   }
+
+  async postProduct(req, res) {
+    console.log(req.body);
+    try {
+      const {
+        sellerId,
+        sellerDiscountId,
+        title,
+        price,
+        description,
+        categoryId,
+        quantity,
+        photos,
+      } = req.body;
+      const postedProduct = await this.model.create({
+        sellerId: sellerId,
+        sellerDiscountId: sellerDiscountId,
+        title: title,
+        price: price,
+        description: description,
+        categoryId: categoryId,
+        quantity: quantity,
+      });
+      console.log(postedProduct);
+      const photoPromise = photos.map(async (photoUrl, index) => {
+        const sentPhoto = await this.photoModel.create({
+          index: index,
+          url: photoUrl,
+          productId: postedProduct.id,
+        });
+        return sentPhoto;
+      });
+      const createdPhotosLinks = await Promise.all(photoPromise);
+      postedProduct.setDataValue("photos", createdPhotosLinks);
+      res.json(postedProduct);
+    } catch (error) {
+      console.log(error);
+      res.status(400).json(error);
+    }
+  }
 }
 module.exports = ProductsController;

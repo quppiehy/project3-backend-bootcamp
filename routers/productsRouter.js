@@ -26,6 +26,7 @@ class ProductsRouter {
       "/category/:categoryId",
       this.controller.getOneCategory.bind(this.controller)
     );
+    router.post("/", this.controller.postProduct.bind(this.controller));
     // router.post(
     //   "/",
     // this.jwtCheck,
