@@ -360,6 +360,7 @@ class ProductsController extends BaseController {
       res.status(400).json(error);
     }
   }
+
   async addOneReview(req, res) {
     const { productId } = req.params;
     const { userId, content, ratingId } = req.body;
@@ -405,6 +406,34 @@ class ProductsController extends BaseController {
     } catch (error) {
       console.log(error);
       res.status(400).json(error);
+    }
+  }
+
+  async clearAndEmptyCart(req, res) {
+    const { userId } = req.params;
+    try {
+      // set total cart to 0
+      await this.currentCartModel.update(
+        { totalPrice: 0 },
+        { where: { userId } }
+      );
+      // find the cart based on userId
+      const cart = await this.currentCartModel.findOne({
+        where: { userId },
+      });
+      // delete all products from cart
+      if (cart) {
+        await this.currentCartProductModel.destroy({
+          where: { currentCartId: cart.id },
+        });
+      }
+      res.json({
+        success: true,
+        message: "Cleared",
+      });
+    } catch (error) {
+      console.error("Error:", error);
+      res.status(500).json({ error: "error failed to clear cart" });
     }
   }
 }

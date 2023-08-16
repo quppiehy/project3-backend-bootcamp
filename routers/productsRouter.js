@@ -60,6 +60,10 @@ class ProductsRouter {
       this.controller.getTotalPrice.bind(this.controller)
     );
 
+    router.put(
+      "/cart/:userId/update",
+      this.controller.clearAndEmptyCart.bind(this.controller)
+    );
     // router.post(
     //   "/",
     // this.jwtCheck,
