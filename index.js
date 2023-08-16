@@ -43,10 +43,14 @@ const productsController = new ProductsController(
   current_cart,
   current_cart_product
 );
-const usersController = new UsersController(user,address);
+const usersController = new UsersController(user, address);
 const ordersController = new OrdersController(order, user, shipping_method);
 const chatController = new ChatController(chat, chat_history);
-const productsOrdersController = new ProductsOrdersController(product_order, product, seller_discount);
+const productsOrdersController = new ProductsOrdersController(
+  product_order,
+  product,
+  seller_discount
+);
 
 // importing Routers
 const ProductsRouter = require("./routers/productsRouter");

@@ -15,6 +15,10 @@ class OrdersRouter {
       "/list/:userId",
       this.controller.getAllOrdersForUser.bind(this.controller)
     );
+    router.get(
+      "/shippingmethods/list",
+      this.controller.getAllShippingMethods.bind(this.controller)
+    );
 
     return router;
   }

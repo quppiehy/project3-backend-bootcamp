@@ -48,6 +48,15 @@ class OrdersController extends BaseController {
       return res.status(400).json({ error: true, msg: err.message });
     }
   }
+
+  async getAllShippingMethods(req, res) {
+    try {
+      const output = await this.shippingMethodModel.findAll();
+      res.json(output);
+    } catch (err) {
+      return res.status(400).json({ error: true, msg: err.message });
+    }
+  }
 }
 
 module.exports = OrdersController;
