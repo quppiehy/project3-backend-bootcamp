@@ -15,11 +15,13 @@ const {
   category,
   seller_discount,
   photo,
+  product_order,
   chat,
   address,
   current_cart,
   current_cart_product,
-  chat_message,
+  chat_history,
+  shipping_method,
 } = db;
 
 // import middlewares
@@ -30,7 +32,7 @@ const ProductsController = require("./controllers/productsController");
 const UsersController = require("./controllers/usersController.js");
 const OrdersController = require("./controllers/ordersController.js");
 const ChatController = require("./controllers/chatController.js");
-
+const ProductsOrdersController = require("./controllers/productsOrdersController");
 // initializing Controllers -> note the lowercase for the first word
 const productsController = new ProductsController(
   product,
@@ -41,16 +43,17 @@ const productsController = new ProductsController(
   current_cart,
   current_cart_product
 );
-const usersController = new UsersController(user, address);
-const ordersController = new OrdersController(order, user);
-const chatController = new ChatController(chat, chat_message);
+const usersController = new UsersController(user,address);
+const ordersController = new OrdersController(order, user, shipping_method);
+const chatController = new ChatController(chat, chat_history);
+const productsOrdersController = new ProductsOrdersController(product_order, product, seller_discount);
 
 // importing Routers
 const ProductsRouter = require("./routers/productsRouter");
 const UsersRouter = require("./routers/usersRouter");
 const OrdersRouter = require("./routers/ordersRouter");
 const ChatRouter = require("./routers/chatRouter");
-
+const ProductsOrdersRouter = require("./routers/productOrdersRouter");
 // declare port to listen to and initialise Express
 const PORT = process.env.PORT;
 const app = express();
@@ -67,6 +70,9 @@ const productsRouter = new ProductsRouter(productsController); // pass in jwtChe
 const usersRouter = new UsersRouter(usersController);
 const ordersRouter = new OrdersRouter(ordersController);
 const chatRouter = new ChatRouter(io, chatController);
+const productsOrdersRouter = new ProductsOrdersRouter(productsOrdersController);
+
+// const socketManager = new SocketManager(server, chat, chat_history);
 
 // Enable CORS access to this server
 const corsOptions = {
@@ -82,7 +88,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/products", productsRouter.routes());
 app.use("/users", usersRouter.routes());
 app.use("/orders", ordersRouter.routes());
-
+app.use("/productorders", productsOrdersRouter.routes());
 //set up chatRouter instance to handle socket listeners
 chatRouter.setupSocketListeners();
 
