@@ -9,7 +9,8 @@ class ProductsController extends BaseController {
     user,
     photo,
     current_cart,
-    current_cart_product
+    current_cart_product,
+    review
   ) {
     super(model);
     this.categoryModel = category;
@@ -18,6 +19,7 @@ class ProductsController extends BaseController {
     this.photoModel = photo;
     this.currentCartModel = current_cart;
     this.currentCartProductModel = current_cart_product;
+    this.reviewModel = review;
   }
 
   // onLogin check if user exists, if not create
@@ -384,6 +386,51 @@ class ProductsController extends BaseController {
     } catch (error) {
       console.error("Error:", error);
       res.status(500).json({ error: "error failed to clear cart" });
+  async addOneReview(req, res) {
+    const { productId } = req.params;
+    const { userId, content, ratingId } = req.body;
+    try {
+      const output = await this.reviewModel.create({
+        productId: productId,
+        userId: userId,
+        content: content,
+        ratingId: ratingId,
+      });
+      return res.json(output);
+    } catch (err) {
+      console.log(err);
+      return res.status(400).json({ error: true, msg: err });
+    }
+  }
+  async getAllReviewForProduct(req, res) {
+    const { productId } = req.params;
+    try {
+      const output = await this.reviewModel.findAll({
+        where: { productId: productId },
+        include: [
+          { model: this.userModel }, // Using the alias defined in the association
+        ],
+      });
+      return res.json(output);
+    } catch (err) {
+      console.log(err);
+      return res.status(400).json({ error: true, msg: err.message });
+    }
+  }
+
+  async getTotalPrice(req, res) {
+    const { userId } = req.params;
+    try {
+      const total = await this.currentCartModel.findAll({
+        where: {
+          userId: userId,
+        },
+      });
+      console.log(total);
+      res.json(total);
+    } catch (error) {
+      console.log(error);
+      res.status(400).json(error);
     }
   }
 }

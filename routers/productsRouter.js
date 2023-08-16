@@ -59,6 +59,15 @@ class ProductsRouter {
       "/cart/:userId/update",
       this.controller.clearAndEmptyCart.bind(this.controller)
     );
+    router.get(
+      "/cart/total/:userId",
+      this.controller.getTotalPrice.bind(this.controller)
+    );
+
+    router.put(
+      "/cart/:userId/update",
+      this.controller.clearAndEmptyCart.bind(this.controller)
+    );
     // router.post(
     //   "/",
     // this.jwtCheck,
@@ -71,6 +80,14 @@ class ProductsRouter {
     //   // this.jwtCheck,
     //   this.controller.buyItem.bind(this.controller)
     // );
+    router.post(
+      "/:productId",
+      this.controller.addOneReview.bind(this.controller)
+    );
+    router.get(
+      "/:productId/review",
+      this.controller.getAllReviewForProduct.bind(this.controller)
+    );
     return router;
   }
 }

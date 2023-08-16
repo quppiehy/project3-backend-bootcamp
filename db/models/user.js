@@ -10,6 +10,7 @@ module.exports = (sequelize, DataTypes) => {
       this.hasMany(models.chat);
       this.hasOne(models.current_cart);
       this.hasMany(models.like);
+      this.hasMany(models.chat_message);
       this.belongsToMany(models.product, {
         through: "user_product",
         foreignKey: "userId",
