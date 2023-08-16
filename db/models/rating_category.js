@@ -2,9 +2,9 @@
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Rating_Category extends Model {
-    static associate(models) {
-      this.hasMany(models.review);
-    }
+    //static associate(models) {
+      //this.hasMany(models.review);
+    //}
   }
   Rating_Category.init(
     {
