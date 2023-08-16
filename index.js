@@ -18,6 +18,8 @@ const {
   product_order,
   chat,
   address,
+  current_cart,
+  current_cart_product,
   chat_history,
   shipping_method,
 } = db;
@@ -37,7 +39,9 @@ const productsController = new ProductsController(
   category,
   seller_discount,
   user,
-  photo
+  photo,
+  current_cart,
+  current_cart_product
 );
 const usersController = new UsersController(user,address);
 const ordersController = new OrdersController(order, user, shipping_method);
