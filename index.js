@@ -20,7 +20,7 @@ const {
   address,
   current_cart,
   current_cart_product,
-  chat_history,
+  chat_message,
   shipping_method,
   review,
 } = db;
@@ -48,7 +48,13 @@ const productsController = new ProductsController(
 );
 const usersController = new UsersController(user, address);
 const ordersController = new OrdersController(order, user, shipping_method);
-const chatController = new ChatController(chat, chat_history);
+const chatController = new ChatController(
+  chat,
+  chat_message,
+  product,
+  user,
+  photo
+);
 const productsOrdersController = new ProductsOrdersController(
   product_order,
   product,
