@@ -305,6 +305,7 @@ class ProductsController extends BaseController {
             ],
           },
         ],
+        order: [["id", "ASC"]],
       });
 
       if (!cart) {
