@@ -15,8 +15,11 @@ const {
   category,
   seller_discount,
   photo,
+  product_order,
   chat,
+  address,
   chat_history,
+  shipping_method,
 } = db;
 
 // import middlewares
@@ -36,9 +39,10 @@ const productsController = new ProductsController(
   user,
   photo
 );
-const usersController = new UsersController(user);
-const ordersController = new OrdersController(order, user);
+const usersController = new UsersController(user,address);
+const ordersController = new OrdersController(order, user, shipping_method);
 const chatController = new ChatController(chat, chat_history);
+const productsOrdersController = new ProductsOrdersController(product_order, product, seller_discount);
 
 // importing Routers
 const ProductsRouter = require("./routers/productsRouter");
@@ -62,6 +66,7 @@ const productsRouter = new ProductsRouter(productsController); // pass in jwtChe
 const usersRouter = new UsersRouter(usersController);
 const ordersRouter = new OrdersRouter(ordersController);
 const chatRouter = new ChatRouter(io, chatController);
+const productsOrdersRouter = new ProductsOrdersRouter(productsOrdersController);
 
 // const socketManager = new SocketManager(server, chat, chat_history);
 
