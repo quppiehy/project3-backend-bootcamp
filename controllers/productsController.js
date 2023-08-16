@@ -2,12 +2,24 @@ const BaseController = require("./baseController");
 const { Op } = require("sequelize");
 
 class ProductsController extends BaseController {
-  constructor(model, category, seller_discount, user, photo) {
+  constructor(
+    model,
+    category,
+    seller_discount,
+    user,
+    photo,
+    current_cart,
+    current_cart_product,
+    review,
+  ) {
     super(model);
     this.categoryModel = category;
     this.sellerDiscountModel = seller_discount;
     this.userModel = user;
     this.photoModel = photo;
+    this.currentCartModel = current_cart;
+    this.currentCartProductModel = current_cart_product;
+    this.reviewModel = review;
   }
 
   // onLogin check if user exists, if not create
@@ -183,6 +195,199 @@ class ProductsController extends BaseController {
       });
       return res.json(output);
     } catch (err) {
+      return res.status(400).json({ error: true, msg: err.message });
+    }
+  }
+
+  //Product Cart functionalities
+  async getOrCreateCart(req, res) {
+    try {
+      const { userId } = req.params;
+      const [cart, created] = await this.currentCartModel.findOrCreate({
+        where: { userId },
+        defaults: { userId },
+      });
+      if (created) {
+        console.log("cart already created");
+      }
+      res.json(cart.id);
+    } catch (error) {
+      console.error("Error", error);
+      res.status(500).json({ error: "Failed" });
+    }
+  }
+
+  async addToCart(req, res) {
+    try {
+      const { productId, currentCartId, quantity } = req.body;
+      await this.currentCartProductModel.create({
+        productId: productId,
+        currentCartId: currentCartId,
+        quantity: quantity,
+      });
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error", error);
+      res.status(500).json({ error: "Failed" });
+    }
+  }
+
+  async updateCurrentCart(req, res) {
+    try {
+      const { currentCartId } = req.params;
+      const { productId, quantity } = req.body;
+      const updatedProduct = await this.currentCartProductModel.update(
+        { quantity: quantity },
+        {
+          where: {
+            currentCartId: currentCartId,
+            productId: productId,
+          },
+        }
+      );
+      res.json(updatedProduct);
+    } catch (error) {
+      console.error("Error", error);
+      res.status(500).json({ error: "Failed" });
+    }
+  }
+
+  async updateTotalOfCurrentCart(req, res) {
+    try {
+      const { currentCartId } = req.params;
+      const { total } = req.body;
+
+      const updatedCart = await this.currentCartModel.update(
+        { totalPrice: total },
+        {
+          where: {
+            id: currentCartId,
+          },
+        }
+      );
+      res.json(updatedCart);
+    } catch (error) {
+      console.error("Error", error);
+      res.status(500).json({ error: "Failed" });
+    }
+  }
+
+  async destroyProductFromCart(req, res) {
+    try {
+      const { currentCartId, productId } = req.params;
+      await this.currentCartProductModel.destroy({
+        where: {
+          currentCartId: currentCartId,
+          productId: productId,
+        },
+      });
+      res.status(200).json({ message: "Product deleted from cart" });
+    } catch (error) {
+      console.error("Error", error);
+      res.status(500).json({ error: "Failed" });
+    }
+  }
+
+  async getAllProductsFromCart(req, res) {
+    try {
+      const { userId } = req.params;
+
+      const cart = await this.currentCartModel.findOne({
+        where: { userId: userId },
+      });
+
+      const productsInCart = await this.currentCartProductModel.findAll({
+        where: { currentCartId: cart.id },
+        include: [
+          {
+            model: this.model,
+            include: [
+              { model: this.photoModel },
+              { model: this.sellerDiscountModel },
+            ],
+          },
+        ],
+        order: [["id", "ASC"]],
+      });
+
+      if (!cart) {
+        res.json(null);
+      } else {
+        res.json(productsInCart);
+      }
+    } catch (error) {
+      console.error("Error", error);
+      res.status(500).json({ error: "Failed" });
+    }
+  }
+  // adds a product onto the table
+  async postProduct(req, res) {
+    console.log(req.body);
+    try {
+      const {
+        sellerId,
+        sellerDiscountId,
+        title,
+        price,
+        description,
+        categoryId,
+        quantity,
+        photos,
+      } = req.body;
+      const postedProduct = await this.model.create({
+        sellerId: sellerId,
+        sellerDiscountId: sellerDiscountId,
+        title: title,
+        price: price,
+        description: description,
+        categoryId: categoryId,
+        quantity: quantity,
+      });
+      console.log(postedProduct);
+      const photoPromise = photos.map(async (photoUrl, index) => {
+        const sentPhoto = await this.photoModel.create({
+          index: index,
+          url: photoUrl,
+          productId: postedProduct.id,
+        });
+        return sentPhoto;
+      });
+      const createdPhotosLinks = await Promise.all(photoPromise);
+      postedProduct.setDataValue("photos", createdPhotosLinks);
+      res.json(postedProduct);
+    } catch (error) {
+      console.log(error);
+      res.status(400).json(error);
+    }
+  }
+  async addOneReview(req, res) {
+    const { productId } = req.params;
+    const { userId, content, ratingId } = req.body;
+    try {
+      const output = await this.reviewModel.create({
+        productId: productId,
+        userId: userId,
+        content: content,
+        ratingId: ratingId,
+      });
+      return res.json(output);
+    } catch (err) {
+      console.log(err);
+      return res.status(400).json({ error: true, msg: err });
+    }
+  }
+  async getAllReviewForProduct(req, res) {
+    const { productId } = req.params;
+    try {
+      const output = await this.reviewModel.findAll({
+        where: { productId: productId },
+        include: [
+          { model: this.userModel }, // Using the alias defined in the association
+        ],
+      });
+      return res.json(output);
+    } catch (err) {
+      console.log(err);
       return res.status(400).json({ error: true, msg: err.message });
     }
   }

@@ -1,9 +1,10 @@
 const BaseController = require("./baseController");
 
 class OrdersController extends BaseController {
-  constructor(model, userModel) {
+  constructor(model, userModel, shippingMethodModel) {
     super(model);
     this.userModel = userModel;
+    this.shippingMethodModel = shippingMethodModel;
   }
 
   // Retrieve specific listing. No authentication required.
@@ -22,7 +23,12 @@ class OrdersController extends BaseController {
   async getAllOrders(req, res) {
     try {
       const output = await this.model.findAll({
-        include: [{ model: this.userModel }],
+        include: [
+          { model: this.userModel },
+          {
+            model: this.shippingMethodModel,
+          },
+        ],
       });
       return res.json(output);
     } catch (err) {
@@ -38,6 +44,15 @@ class OrdersController extends BaseController {
         include: { model: this.userModel, where: { id: id } },
       });
       return res.json(output);
+    } catch (err) {
+      return res.status(400).json({ error: true, msg: err.message });
+    }
+  }
+
+  async getAllShippingMethods(req, res) {
+    try {
+      const output = await this.shippingMethodModel.findAll();
+      res.json(output);
     } catch (err) {
       return res.status(400).json({ error: true, msg: err.message });
     }
