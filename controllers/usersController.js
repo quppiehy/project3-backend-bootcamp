@@ -1,8 +1,9 @@
 const BaseController = require("./baseController");
 
 class UsersController extends BaseController {
-  constructor(model) {
+  constructor(model, address) {
     super(model);
+    this.addressModel = address;
   }
 
   /** if a method in this extended class AND the base class has the same name, the one in the extended class will run over the base method */
@@ -138,23 +139,92 @@ class UsersController extends BaseController {
   // ... your other methods ...
 
   // Example implementation in your UsersController.js
-  async updateUserInfo(req, res) {
-    // Extract the user ID from the URL
-    const { username, firstName, lastName, email, mobileNumber } = req.body;
 
+  async updateUserInfo(req, res) {
+    const { userName, firstName, lastName, email, mobileNumber, id } = req.body;
     try {
-      // Update the user's information in the database
-      const output = await this.model.create({
-        userName: username,
-        firstName: firstName,
-        lastName: lastName,
-        email: email,
-        mobileNumber: mobileNumber,
-      });
-      return res.json(output);
+      const updatedUser = await this.model.update(
+        { userName, firstName, lastName, email, mobileNumber },
+        { where: { id: id } }
+      );
+      return res.json(updatedUser);
     } catch (err) {
       console.error(err.message);
       return res.status(400).json({ error: true, msg: err.message });
+    }
+  }
+
+  async getOneAddress(req, res) {
+    const { userId } = req.params;
+    try {
+      const existingAddress = await this.addressModel.findOne({
+        where: { userId: userId },
+      });
+      return res.json(existingAddress);
+    } catch (error) {
+      console.error("Error processing the address:", error);
+      return res.status(500).json({ error: true, msg: "Error" });
+    }
+  }
+
+  async findOrCreateAddress(req, res) {
+    const { userId } = req.params;
+    const { address, city, postalCode, contactNumber } = req.body;
+
+    try {
+      // Check if an address for the user already exists
+      const existingAddress = await this.addressModel.findOne({
+        where: { userId: userId },
+      });
+
+      if (existingAddress) {
+        // Update the address if it exists
+        await existingAddress.update({
+          address,
+          city,
+          postalCode,
+          contactNumber,
+        });
+        console.log(`Address updated for user: ${userId}`);
+      } else {
+        // Create a new address if it doesn't exist
+        await this.addressModel.create({
+          userId,
+          address,
+          city,
+          postalCode,
+          contactNumber,
+        });
+        console.log(`Address created for user: ${userId}`);
+      }
+
+      return res.json({
+        success: true,
+        message: "Address processed successfully",
+      });
+    } catch (error) {
+      console.error("Error processing the address:", error);
+      return res.status(500).json({ error: true, msg: "Error" });
+    }
+  }
+
+  async updateAddressInfo(req, res) {
+    const { address, city, postalCode, addressMobileNumber, userId } = req.body;
+
+    try {
+      const updatedAddress = await this.addressModel.updateForUser(userId, {
+        address,
+        city,
+        postalCode,
+        addressMobileNumber,
+      });
+
+      return res.json(updatedAddress);
+    } catch (error) {
+      console.error(error.message);
+      return res
+        .status(500)
+        .json({ error: true, msg: "Address update failed" });
     }
   }
 }
