@@ -55,6 +55,10 @@ class ProductsRouter {
       this.controller.destroyProductFromCart.bind(this.controller)
     );
 
+    router.put(
+      "/cart/:userId/update",
+      this.controller.clearAndEmptyCart.bind(this.controller)
+    );
     // router.post(
     //   "/",
     // this.jwtCheck,
