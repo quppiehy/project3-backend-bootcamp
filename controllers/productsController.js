@@ -317,7 +317,7 @@ class ProductsController extends BaseController {
       res.status(500).json({ error: "Failed" });
     }
   }
-
+  // adds a product onto the table
   async postProduct(req, res) {
     console.log(req.body);
     try {
