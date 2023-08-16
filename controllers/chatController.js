@@ -1,14 +1,18 @@
 const BaseController = require("./baseController");
 
 class ChatController extends BaseController {
-  constructor(model, messageModel) {
+  constructor(model, messageModel, productModel, userModel, photoModel) {
     super(model);
     this.messageModel = messageModel;
+    this.productModel = productModel;
+    this.userModel = userModel;
+    this.photoModel = photoModel;
   }
 
   /** if a method in this extended class AND the base class has the same name, the one in the extended class will run over the base method */
 
   async createRoom(data) {
+    console.log(data);
     const { productId, userId } = data;
     try {
       const [newChat, created] = await this.model.findOrCreate({
@@ -26,11 +30,12 @@ class ChatController extends BaseController {
   }
 
   async sendMessage(data) {
-    const { content, room } = data;
+    const { content, room, userId } = data;
     try {
       const newChat = await this.messageModel.create({
         chatId: room,
         content: content,
+        userId: userId,
       });
       return newChat;
     } catch (err) {
@@ -38,21 +43,52 @@ class ChatController extends BaseController {
     }
   }
 
-  async archiveChat() {
-    setInterval(async () => {
-      if (this.activeChatMessages.length > 0) {
-        try {
-          const newChat = await this.chatModel.create({
-            prodId: this.activeChatMessages[0].prodId,
-            content: this.activeChatMessages[0].content,
-            userId: this.activeChatMessages[0].userId,
-          });
-          console.log(newChat);
-        } catch (error) {
-          console.error(`Error archiving chat messages:`, error);
-        }
-      }
-    });
+  async getUserChatList(id) {
+    try {
+      const userChat = await this.model.findAll({
+        where: { userId: id },
+        include: [
+          {
+            model: this.productModel,
+            include: [
+              {
+                model: this.userModel,
+                as: "seller",
+                attributes: ["userName"],
+              },
+              {
+                model: this.photoModel,
+                as: "photos",
+                attributes: ["index", "url"],
+              },
+            ],
+          },
+        ],
+      });
+      console.log(userChat);
+      return userChat;
+    } catch (err) {
+      return err.message;
+    }
+  }
+
+  async getMessages(id) {
+    try {
+      const userChat = await this.messageModel.findAll({
+        where: { chatId: id },
+        include: [
+          {
+            model: this.userModel,
+            as: "author",
+            attributes: ["userName"],
+          },
+        ],
+      });
+      console.log(userChat);
+      return userChat;
+    } catch (err) {
+      return err.message;
+    }
   }
 
   // async getAllForUser(req, res) {

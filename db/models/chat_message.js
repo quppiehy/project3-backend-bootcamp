@@ -4,6 +4,7 @@ module.exports = (sequelize, DataTypes) => {
   class Chat_Message extends Model {
     static associate(models) {
       this.belongsTo(models.chat, { foreignKey: "chatId" });
+      this.belongsTo(models.user, { foreignKey: "userId", as: "author" });
     }
   }
   Chat_Message.init(
@@ -19,7 +20,14 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
+      userId: {
+        type: DataTypes.STRING,
+        foreignKey: true,
+      },
       createdAt: {
+        type: DataTypes.DATE,
+      },
+      updatedAt: {
         type: DataTypes.DATE,
       },
     },

@@ -2,7 +2,7 @@ class ChatRouter {
   constructor(io, controller) {
     this.io = io;
     this.controller = controller;
-    this.activeChatMessages = [];
+
     // this.jwtCheck = jwtCheck;
   }
 
@@ -32,15 +32,35 @@ class ChatRouter {
           // const newChat =
           await this.controller.sendMessage(data);
           socket.to(data.room).emit("receive_message", data);
-          this.activeChatMessages.push(data);
         } catch (err) {
           console.log(`Error sending chat message to DB: `, err);
         }
       });
 
+      //retrieve chatlist and send it back to frontend
+      socket.on("retrieve_chatlist", async (id) => {
+        console.log(id);
+        try {
+          const userChat = await this.controller.getUserChatList(id);
+          socket.emit("user_chat_list", userChat);
+        } catch (err) {
+          console.log(`Error in retrieve chatlist: `, err);
+        }
+      });
+
+      //retrieve messagelist and send it back to frontend
+      socket.on("retrieve_messages", async (id) => {
+        console.log(id);
+        try {
+          const messages = await this.controller.getMessages(id);
+          socket.emit("chat_messages", messages);
+        } catch (err) {
+          console.log(`error in retrieve messages: `, err);
+        }
+      });
+
       socket.on("disconnect", async () => {
         console.log("User Disconnected", socket.id);
-        // await this.chatController.archiveChat(data);
       });
     });
   }
