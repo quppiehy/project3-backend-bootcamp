@@ -55,10 +55,6 @@ class ProductsRouter {
       this.controller.destroyProductFromCart.bind(this.controller)
     );
 
-    router.put(
-      "/cart/:userId/update",
-      this.controller.clearAndEmptyCart.bind(this.controller)
-    );
     router.get(
       "/cart/total/:userId",
       this.controller.getTotalPrice.bind(this.controller)
