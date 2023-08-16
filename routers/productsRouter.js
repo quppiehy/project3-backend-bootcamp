@@ -67,6 +67,14 @@ class ProductsRouter {
     //   // this.jwtCheck,
     //   this.controller.buyItem.bind(this.controller)
     // );
+    router.post(
+      "/:productId",
+      this.controller.addOneReview.bind(this.controller)
+    );
+    router.get(
+      "/:productId/review",
+      this.controller.getAllReviewForProduct.bind(this.controller)
+    );
     return router;
   }
 }
