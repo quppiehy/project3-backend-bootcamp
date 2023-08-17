@@ -39,22 +39,10 @@ class ChatRouter {
 
       //retrieve chatlist and send it back to frontend
       socket.on("retrieve_chatlist", async (id) => {
-        console.log("In retrieve ChatList", id);
+        console.log(id);
         try {
           const userChat = await this.controller.getUserChatList(id);
-          console.log(userChat);
           socket.emit("user_chat_list", userChat);
-        } catch (err) {
-          console.log(`Error in retrieve chatlist: `, err);
-        }
-      });
-
-      //retrieve sellerChatlist and send it back to frontend
-      socket.on("getSeller_chatlist", async (id) => {
-        try {
-          const products = await this.controller.getSellerProductList(id);
-          console.log(products);
-          socket.emit("seller_chat_list", products);
         } catch (err) {
           console.log(`Error in retrieve chatlist: `, err);
         }
@@ -62,7 +50,7 @@ class ChatRouter {
 
       //retrieve messagelist and send it back to frontend
       socket.on("retrieve_messages", async (id) => {
-        console.log("In retrieve Messages", id);
+        console.log(id);
         try {
           const messages = await this.controller.getMessages(id);
           socket.emit("chat_messages", messages);

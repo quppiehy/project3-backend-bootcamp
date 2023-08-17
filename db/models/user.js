@@ -5,10 +5,9 @@ module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     static associate(models) {
       this.hasMany(models.address);
-      this.hasMany(models.order, { foreignKey: "id", as: "buyer" });
+      this.hasMany(models.order, { as: "buyer", foreignKey: "id" });
       this.hasMany(models.review);
-      this.hasMany(models.chat, { foreignKey: "userId", as: "seller" });
-      this.hasMany(models.chat, { foreignKey: "userId", as: "buying" });
+      this.hasMany(models.chat);
       this.hasOne(models.current_cart);
       this.hasMany(models.like);
       this.hasMany(models.chat_message);
@@ -17,10 +16,10 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "userId",
         as: "sellerId",
       });
-      // this.hasMany(models.product, {
-      //   foreignKey: "userId",
-      //   as: "productChat",
-      // });
+      this.hasMany(models.product, {
+        foreignKey: "sellerId",
+        as: "products",
+      });
     }
 
     static updateUserInfo(userId, updatedUserInfo) {
