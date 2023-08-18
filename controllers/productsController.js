@@ -120,7 +120,6 @@ class ProductsController extends BaseController {
           { model: this.photoModel },
           {
             model: this.userModel,
-            as: "seller",
           },
         ],
       });
@@ -135,7 +134,7 @@ class ProductsController extends BaseController {
     try {
       const output = await this.model.findAll({
         include: [
-          { model: this.userModel, as: "seller" }, // Using the alias defined in the association
+          { model: this.userModel }, // Using the alias defined in the association
           { model: this.categoryModel },
           { model: this.sellerDiscountModel },
           { model: this.photoModel },
@@ -382,9 +381,7 @@ class ProductsController extends BaseController {
     try {
       const output = await this.reviewModel.findAll({
         where: { productId: productId },
-        include: [
-          { model: this.userModel }, // Using the alias defined in the association
-        ],
+        include: [{ model: this.userModel }],
       });
       return res.json(output);
     } catch (err) {
