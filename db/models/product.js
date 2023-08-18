@@ -6,7 +6,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       this.hasMany(models.review);
       this.hasMany(models.like);
-      this.hasMany(models.chat);
+      this.hasMany(models.chat, { foreignKey: "productId" });
       this.hasMany(models.photo);
       this.belongsTo(models.seller_discount, {
         foreignKey: "sellerDiscountId",
@@ -17,6 +17,7 @@ module.exports = (sequelize, DataTypes) => {
       this.belongsToMany(models.user, {
         through: "user_product",
         foreignKey: "productId",
+        // as: "products",
       });
       this.belongsToMany(models.current_cart, {
         through: "current_cart_product",
@@ -26,18 +27,36 @@ module.exports = (sequelize, DataTypes) => {
       });
       this.belongsTo(models.user, {
         foreignKey: "sellerId",
-        as: "seller",
+        // as: "seller",
       });
     }
   }
   Product.init(
     {
-      sellerId: DataTypes.INTEGER,
-      sellerDiscountId: DataTypes.INTEGER,
+      sellerId: {
+        type: DataTypes.INTEGER,
+        references: {
+          model: "user",
+          key: "id",
+        },
+      },
+      sellerDiscountId: {
+        type: DataTypes.INTEGER,
+        references: {
+          model: "seller_discount",
+          key: "id",
+        },
+      },
       title: DataTypes.STRING,
       price: DataTypes.DECIMAL,
       description: DataTypes.TEXT,
-      categoryId: DataTypes.INTEGER,
+      categoryId: {
+        type: DataTypes.INTEGER,
+        references: {
+          model: "category",
+          key: "id",
+        },
+      },
       quantity: DataTypes.INTEGER,
     },
     {
