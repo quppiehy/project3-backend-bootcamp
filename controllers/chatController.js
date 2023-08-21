@@ -13,10 +13,11 @@ class ChatController extends BaseController {
 
   async createRoom(data) {
     console.log(data);
-    const { productId, userId } = data;
+    const { productId, userId, sellerId } = data;
+    console.log("After extracting from data", productId, userId);
     try {
       const [newChat, created] = await this.model.findOrCreate({
-        where: { productId: productId, userId: userId },
+        where: { productId: productId, userId: userId, sellerId: sellerId },
       });
       if (created) {
         console.log("Created 1 new Chat!");
